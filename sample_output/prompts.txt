@@ -1,0 +1,26 @@
+Character: nintendo mario
+Setting:in front of a castle
+Style: HD 3D render
+
+Expanded Character Details:
+This iconic video game character is a short, stocky plumber with a bushy mustache and a round nose. He wears blue overalls, a red long-sleeved shirt, white gloves, and a red cap marked with an "M." Known for jumping high and collecting coins in a colorful fantasy world.
+
+Style details:
+A HD 3D render features photorealistic imagery created digitally with sharp detail, accurate lighting, and precise textures. It displays lifelike objects with proper depth, shadows, and reflections. The style emphasizes high resolution, smooth surfaces, and dimensional accuracy that often makes virtual objects indistinguishable from photographs of physical items.
+
+Content Detail:
+Standing before a majestic stone castle with soaring turrets and a gleaming moat, Mario's stocky figure cuts a heroic silhouette. His vibrant red cap with its emblazoned "M" catches the sunlight as he adjusts his blue overalls over his crimson shirt. His bushy brown mustache frames a determined smile beneath his round, bulbous nose. White-gloved hands rest confidently on his hips while his worn brown boots stand firmly on the cobblestone path. The fantasy landscape surrounding him bursts with oversized mushrooms, waving question blocks, and emerald pipes jutting from the ground, all under a sky of impossible blue.
+
+Final prompt:
+# Mario Castle Adventure - Photorealistic 3D Render
+
+Create a hyper-realistic 3D rendered image of Mario standing heroically before a magnificent stone castle. Capture him in his iconic red cap with "M" emblem, blue overalls, and red shirt, with his characteristic mustache and round nose. Position his white-gloved hands confidently on his hips as he stands on cobblestone, his brown boots firmly planted. The castle should feature soaring turrets and a reflective moat catching natural sunlight. Surround the scene with the Mushroom Kingdom's fantastical elements - oversized mushrooms with spotted caps, floating question blocks with metallic sheen, and emerald warp pipes emerging from grassy areas. Render the image with photorealistic lighting, precise textures showing fabric weave and stone detailing, accurate shadows, volumetric depth, and reflective surfaces. Use ray-tracing technology for lifelike interactions between light and materials under a vibrant blue sky with volumetric clouds.
+
+Prompt rewritten by OpenAI: 
+
+ Create a hyper-realistic 3D rendered image of a heroic cartoonish plumber standing proud before a magnificent stone castle. He is characterized with a red cap with a generic emblem, blue overalls, and red shirt, accompanied by a characteristic mustache and round nose. His white-gloved hands are confidently on his hips as he stands on a cobblestone path, his brown boots firmly planted. The castle has soaring turrets and a reflective moat catching natural sunlight. The surroundings feature fantastical elements like oversized fungi with spotted caps, floating question-like blocks with metallic sheen, and emerald-like tubes emerging from grassy areas. The image is rendered with photorealistic lighting, precise textures showing fabric weave and stone detailing, accurate shadows, volumetric depth, and reflective surfaces. The scene is lit with a ray-tracing technology for lifelike interactions between light and materials under a vibrant blue sky with volumetric clouds.
+
+https://oaidalleapiprodscus.blob.core.windows.net/private/org-YEMTlSG5Y2jiuDAMT3coEENq/user-JhC9ueFeiWeyr1PhDNXKR4G3/img-Ffte50Nw5mKHbyUhVGx9VXA6.png?st=2025-05-01T20%3A25%3A12Z&se=2025-05-01T22%3A25%3A12Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=475fd488-6c59-44a5-9aa9-31c4db451bea&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-01T00%3A29%3A30Z&ske=2025-05-02T00%3A29%3A30Z&sks=b&skv=2024-08-04&sig=%2BQLt8c03Weh7lGGjIxscozx8kZUzlNMVv7kqJSyEVs0%3D 
+
+Infringement detection: This image contains copyright and trademark protected characters. The image shows Mario, the iconic character from Nintendo's Super Mario franchise, standing in front of what appears to be Princess Peach's castle. The scene includes other trademarked elements from the Mario universe, such as the red and white mushroom characters (Toads) and the question mark block. All of these elements are intellectual property owned by Nintendo Co., Ltd. and are protected by copyright and trademark laws.
+

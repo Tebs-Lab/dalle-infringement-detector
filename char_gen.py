@@ -1,6 +1,7 @@
 #!python
 
 import argparse
+import base64
 import pathlib
 import sys
 from urllib.request import urlretrieve
@@ -27,7 +28,7 @@ def main():
         help="DALL-E model version string, default 'dall-e-3'",
         type=str, 
         default="dall-e-3", 
-        choices=['dall-e-3', 'dall-e-2']
+        choices=['dall-e-3', 'dall-e-2', 'gpt-image-1']
     )
 
     parser.add_argument('-c', '--claude',
@@ -36,7 +37,12 @@ def main():
         default="claude-3-7-sonnet-latest",
         choices=['claude-3-7-sonnet-latest', 'claude-3-5-haiku-latest', 'claude-3-opus-latest', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307']                
     )
-    
+
+    parser.add_argument('-p', '--prompt-generator', 
+        help="Which model to use for generating intermediate prompts, default: 'gpt'",
+        choices=['gpt', 'claude'],
+        default='gpt'
+    )
 
     # Image generation parameters
     parser.add_argument("-z", "--size", 
@@ -58,12 +64,12 @@ def main():
         help="Only print the final image prompt, do not send it to DALL-E", 
         action='store_true'
     )
-    parser.add_argument("-p", "--open", 
+    parser.add_argument("-o", "--open", 
         help="Automatically open all URL's returned by DALL-E", 
         action='store_true'
     )
     parser.add_argument("-i", "--interim",
-        help="Print all the interim text results from various models", 
+        help="Print all the interim text results from various models. These always appear in the saved prompts.txt, but will only print to the screen if you use this option", 
         action='store_true'
     )
     parser.add_argument("-s", "--save", 
@@ -79,7 +85,8 @@ def main():
         save_directory.mkdir(parents=True, exist_ok=False)
 
     # Your API key must be saved in an env variable for this to work.
-    client = OpenAI()
+    openai_client = OpenAI()
+    anthropic_client = Anthropic()
 
     ## Collect Input Section ## 
     character_name = input("Character: ")
@@ -88,33 +95,42 @@ def main():
 
     text_to_save = f'Character: {character_name}\nSetting:{image_setting}\nStyle: {image_style}\n\n'
 
-    ## Begin Prompting Section ##
+    ### Begin Prompting Section ###
     ## Character Details ##
-    image_subjects = prompts.fetch_character_description(client, args.gpt, character_name)
-    image_subject = image_subjects[0].message.content
+    if args.prompt_generator == 'gpt':
+        image_subject = prompts.fetch_character_description_openai(openai_client, args.gpt, character_name)
+    else: 
+        image_subject = prompts.fetch_character_description_anthropic(anthropic_client, args.claude, character_name)
 
     text_to_save += f'Expanded Character Details:\n{image_subject}\n\n'
     if args.interim:
         print(f'Expanded Character Details:\n{image_subject}\n\n')
 
     ## Fetch Style Details ##
-    style_details = prompts.fetch_style_detail(client, args.gpt, image_style)
-    text_to_save += f'Style details:\n{style_details}\n\n'
-
+    if args.prompt_generator == 'gpt':
+        style_details = prompts.fetch_style_detail_openai(openai_client, args.gpt, image_style)
+    else:
+        style_details = prompts.fetch_style_detail_anthropic(anthropic_client, args.claude, image_style)
     
+    text_to_save += f'Style details:\n{style_details}\n\n'
     if args.interim:
         print(f'Style details:\n{style_details}\n\n')
 
-
-    ## Image Generation Section ##
-    ## Combine Setting With Character ##
-
-    content_details = prompts.fetch_scene_details(client, args.gpt, image_subject, image_setting)
+    ## Fetch Scene Details ##
+    if args.prompt_generator == 'gpt':
+        content_details = prompts.fetch_scene_details_openai(openai_client, args.gpt, image_subject, image_setting)
+    else:
+        content_details = prompts.fetch_scene_details_anthropic(anthropic_client, args.claude, image_subject, image_setting)
+    
     text_to_save += f'Content Detail:\n{content_details}\n\n'
     if args.interim:
         print(f'Content details:\n{content_details}\n\n')
 
-    image_prompt = prompts.fetch_dalle_prompt(client, args.gpt, content_details, style_details)
+    ## Final Image Prompt ##
+    if args.prompt_generator == 'gpt':
+        image_prompt = prompts.fetch_dalle_prompt_openai(openai_client, args.gpt, content_details, style_details)
+    else:
+        image_prompt = prompts.fetch_dalle_prompt_anthropic(anthropic_client, args.claude, content_details, style_details)
 
     text_to_save += f'Final prompt:\n{image_prompt}\n\n'
 
@@ -127,37 +143,52 @@ def main():
     
     print(f'Final prompt: \n{image_prompt}\n')
 
+    ## Image Generation ##
     if not args.text:
-        # The I NEED text below is suggested by OpenAI's docs to reduce prompt rewriting.
-        img_response = client.images.generate(
+        # The "I NEED ..."" text below is suggested by OpenAI's docs to reduce prompt rewriting.
+        # See: https://platform.openai.com/docs/guides/image-generation?image-generation-model=dall-e-3#prompting-tips
+        img_response = openai_client.images.generate(
             model=args.dalle,
             prompt=f'I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: {image_prompt}',
             size=args.size,
-            quality=args.quality,
+            quality=args.quality
         )
 
-        for idx, img_data in enumerate(img_response.data):
-            if img_data.revised_prompt:
-                rewritten_output = f'Prompt rewritten by OpenAI: \n\n {img_data.revised_prompt}\n\n'
-                print(rewritten_output)
-                text_to_save += rewritten_output
+        # We never request multiple images.
+        img_response = img_response.data[0]
 
-            print(img_data.url)
-            text_to_save += f'{img_data.url} \n\n'
+        if img_response.revised_prompt:
+            rewritten_output = f'Prompt rewritten by OpenAI: \n\n {img_response.revised_prompt}\n\n'
+            print(rewritten_output)
+            text_to_save += rewritten_output
 
-            if args.open:
-                webbrowser.open_new_tab(img_data.url)
-            
-            if args.save:
-                img_save_path = save_directory / f'{idx}.png' # TODO: more robust
-                urlretrieve(img_data.url, img_save_path)
+        print(f'Image URL: {img_response.url}\n\n')
+        text_to_save += f'{img_response.url} \n\n'
 
+        if args.open:
+            webbrowser.open_new_tab(img_response.url)
+        
+        image_save_path = None
+        if args.save:
+            img_save_path = save_directory / f'produced_image.png'
+        
+        # if args.save is None a temp file will be made, otherwise f will be at the user specified path
+        f, image_data = urlretrieve(img_response.url, img_save_path)
+
+        with open(f, "rb") as image_file:
+            binary_data = image_file.read()
+            base_64_encoded_data = base64.b64encode(binary_data)
+            base64_string = base_64_encoded_data.decode('utf-8')
+
+        infringement_response = prompts.fetch_infrigement_detection(anthropic_client, args.claude, base64_string)
+        print(f'Infringement detection:\n\n {infringement_response}\n\n')
+        text_to_save += f'Infringement detection: {infringement_response}\n\n'
+
+    ## Persist Results ##
     if args.save:
         save_text_path = save_directory / "prompts.txt"
         with save_text_path.open("w", encoding ="utf-8") as f:
             f.write(text_to_save)
-
-
 
 if __name__ == '__main__':
     main()
