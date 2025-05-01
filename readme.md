@@ -49,7 +49,19 @@ A folder named `character_output` will be made in the current working directory,
 ./char_gen.py -i
 ```
 
-#### Most recommended setting, auto-open, save, and interim printing
+#### Specify non-default models
+
+```
+./char_gen.py -c claude-3-5-haiku-latest -g gpt-4.1 -d DALLE-2
+```
+
+#### Use Claude to generate interim prompts instead of GPT
+
+```
+./char_gen -p claude
+```
+
+#### Most recommended setting: auto-open, save, and interim printing
 
 ```
 ./char_gen.py -ios character_output

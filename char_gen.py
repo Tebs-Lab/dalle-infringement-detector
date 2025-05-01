@@ -20,15 +20,15 @@ def main():
     parser.add_argument("-g", "--gpt", 
         help="GPT model version string, default 'gpt-4'", 
         type=str,
-        default="gpt-4o", 
-        choices=['gpt-4o', 'gpt-4', 'gpt-4-turbo-preview', 'gpt-3.5-turbo', 'gpt-3.5-turbo-instruct', 'babbage-002', 'davinci-002']
+        default="gpt-4", 
+        choices=['gpt-4o', 'gpt-4', 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4-turbo-preview', 'gpt-3.5-turbo', 'gpt-3.5-turbo-instruct', 'babbage-002', 'davinci-002']
     )
 
     parser.add_argument("-d", "--dalle",
         help="DALL-E model version string, default 'dall-e-3'",
         type=str, 
         default="dall-e-3", 
-        choices=['dall-e-3', 'dall-e-2', 'gpt-image-1']
+        choices=['dall-e-3', 'dall-e-2']
     )
 
     parser.add_argument('-c', '--claude',
@@ -42,21 +42,6 @@ def main():
         help="Which model to use for generating intermediate prompts, default: 'gpt'",
         choices=['gpt', 'claude'],
         default='gpt'
-    )
-
-    # Image generation parameters
-    parser.add_argument("-z", "--size", 
-        help="DALL-E image size string, default '1024x1024'. dall-e-2 only supports the default size.", 
-        type=str, 
-        default='1024x1024', 
-        choices=['1024x1024', '1024x1792', '1792x1024']
-    )
-
-    parser.add_argument("-q", "--quality", 
-        help="DALL-E image quality string, default 'standard'", 
-        type=str, 
-        default='standard', 
-        choices=['standard', 'hd']
     )
 
     # Output options
@@ -134,12 +119,14 @@ def main():
 
     text_to_save += f'Final prompt:\n{image_prompt}\n\n'
 
+    # TODO: handle this more gracefully.
     # dall-e-2 has a 1000 character max for prompt, dall-e-3 is 4000 characters
-    # TODO: handle this more gracefully?
-    if args.dalle == 'dall-e-2' and len(image_prompt) > 1000:
-        image_prompt = image_prompt[:1000]
-    elif args.dalle == 'dall-e-3' and len(image_prompt) > 4000:
-        image_prompt = image_prompt[:4000]
+    # The below magic numbers are because of the length of the "I NEED ..." text that OpenAI suggests to use.
+    # See the comment below. Yes, this is jankey.
+    if args.dalle == 'dall-e-2' and len(image_prompt) >= 893:
+        image_prompt = image_prompt[:893]
+    elif args.dalle == 'dall-e-3' and len(image_prompt) > 3893:
+        image_prompt = image_prompt[:3893]
     
     print(f'Final prompt: \n{image_prompt}\n')
 
@@ -149,9 +136,7 @@ def main():
         # See: https://platform.openai.com/docs/guides/image-generation?image-generation-model=dall-e-3#prompting-tips
         img_response = openai_client.images.generate(
             model=args.dalle,
-            prompt=f'I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: {image_prompt}',
-            size=args.size,
-            quality=args.quality
+            prompt=f'I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS: {image_prompt}'
         )
 
         # We never request multiple images.
@@ -168,7 +153,7 @@ def main():
         if args.open:
             webbrowser.open_new_tab(img_response.url)
         
-        image_save_path = None
+        img_save_path = None
         if args.save:
             img_save_path = save_directory / f'produced_image.png'
         
