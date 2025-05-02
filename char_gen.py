@@ -80,44 +80,19 @@ def main():
 
     text_to_save = f'Character: {character_name}\nSetting:{image_setting}\nStyle: {image_style}\n\n'
 
-    ### Begin Prompting Section ###
-    ## Character Details ##
-    if args.prompt_generator == 'gpt':
-        image_subject = prompts.fetch_character_description_openai(openai_client, args.gpt, character_name)
-    else: 
-        image_subject = prompts.fetch_character_description_anthropic(anthropic_client, args.claude, character_name)
-
-    text_to_save += f'Expanded Character Details:\n{image_subject}\n\n'
-    if args.interim:
-        print(f'Expanded Character Details:\n{image_subject}\n\n')
-
-    ## Fetch Style Details ##
-    if args.prompt_generator == 'gpt':
-        style_details = prompts.fetch_style_detail_openai(openai_client, args.gpt, image_style)
-    else:
-        style_details = prompts.fetch_style_detail_anthropic(anthropic_client, args.claude, image_style)
-    
-    text_to_save += f'Style details:\n{style_details}\n\n'
-    if args.interim:
-        print(f'Style details:\n{style_details}\n\n')
-
     ## Fetch Scene Details ##
     if args.prompt_generator == 'gpt':
-        content_details = prompts.fetch_scene_details_openai(openai_client, args.gpt, image_subject, image_setting)
+        image_prompt = prompts.fetch_scene_details_openai(openai_client, args.gpt, character_name, image_setting, image_style)
     else:
-        content_details = prompts.fetch_scene_details_anthropic(anthropic_client, args.claude, image_subject, image_setting)
+        image_prompt = prompts.fetch_scene_details_anthropic(anthropic_client, args.claude, character_name, image_setting, image_style)
     
-    text_to_save += f'Content Detail:\n{content_details}\n\n'
-    if args.interim:
-        print(f'Content details:\n{content_details}\n\n')
-
-    ## Final Image Prompt ##
-    if args.prompt_generator == 'gpt':
-        image_prompt = prompts.fetch_dalle_prompt_openai(openai_client, args.gpt, content_details, style_details)
-    else:
-        image_prompt = prompts.fetch_dalle_prompt_anthropic(anthropic_client, args.claude, content_details, style_details)
-
+    text_to_save += f'Image meta-prompt:\n{prompts.SCENE_GENERATOR_PROMPT.format(subject=character_name, setting=image_setting, style=image_style)}\n\n'
     text_to_save += f'Final prompt:\n{image_prompt}\n\n'
+
+    if args.interim:
+        print(f'Image meta-prompt:\n{prompts.SCENE_GENERATOR_PROMPT.format(subject=character_name, setting=image_setting, style=image_style)}\n\n')
+        print(f'Image prompt:\n{image_prompt}\n\n')
+
 
     # TODO: handle this more gracefully.
     # dall-e-2 has a 1000 character max for prompt, dall-e-3 is 4000 characters
@@ -128,7 +103,6 @@ def main():
     elif args.dalle == 'dall-e-3' and len(image_prompt) > 3893:
         image_prompt = image_prompt[:3893]
     
-    print(f'Final prompt: \n{image_prompt}\n')
 
     ## Image Generation ##
     if not args.text:

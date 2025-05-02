@@ -6,25 +6,16 @@ generate a final engineered image prompt.
 from anthropic import Anthropic
 from openai import OpenAI
 
-CHARACTER_PROMPT = 'Give a detailed physical description of the character {character} in 50 words without using the character\'s name.'
-
-SUBJECT_PROMPT = '''Create a detailed physical description of the following subject and setting in 100 words. In your description, do not use the character's name.
+SCENE_GENERATOR_PROMPT = '''Generate an output prompt for an image generator using the following subject, setting, and art style. Focus on the physical elements of the subject and setting.  Do not use the subjects name anywhere in your output. Be detailed but use 150 words or less. 
 
 Subject: {subject}
 
 Setting: {setting}
+
+Art Style: {style}
 '''
 
-STYLE_PROMPT = 'Create a 50 word summary of the visual aspects of the following artistic style: {style}'
-
-IMG_PROMPT_REQUEST = '''Write a prompt for an image generator using the following content and style in 150 words. In your prompt, do not use the character's name.
-
-Image content: {content}
-
-Image Style: {style}
-'''
-
-def fetch_scene_details_openai(client, model, subject, setting):
+def fetch_scene_details_openai(client, model, subject, setting, style):
     '''
     Use the supplied args and OpenAI client to fetch a more
     detailed description from OpenAI.
@@ -34,7 +25,7 @@ def fetch_scene_details_openai(client, model, subject, setting):
     subject (str) -- a string describing a subject in plain english, for LLM use.
     setting (str) -- a string describing a setting in plain english, for LLM use.
     '''
-    prompt_content = SUBJECT_PROMPT.format(subject=subject, setting=setting)
+    prompt_content = SCENE_GENERATOR_PROMPT.format(subject=subject, setting=setting, style=style)
 
     subject_response = client.responses.create(
         model=model,
@@ -49,7 +40,7 @@ def fetch_scene_details_openai(client, model, subject, setting):
     return subject_response.output_text
 
 
-def fetch_scene_details_anthropic(client, model, subject, setting):
+def fetch_scene_details_anthropic(client, model, subject, setting, style):
     '''
     Use the supplied args and Anthropic client to fetch a more
     detailed description from Anthropic.
@@ -59,7 +50,7 @@ def fetch_scene_details_anthropic(client, model, subject, setting):
     subject (str) -- a string describing a subject in plain english, for LLM use.
     setting (str) -- a string describing a setting in plain english, for LLM use.
     '''
-    prompt_content = SUBJECT_PROMPT.format(subject=subject, setting=setting)
+    prompt_content = SCENE_GENERATOR_PROMPT.format(subject=subject, setting=setting, style=style)
 
     subject_response = client.messages.create(
         model=model,
@@ -72,152 +63,6 @@ def fetch_scene_details_anthropic(client, model, subject, setting):
     )
 
     return subject_response.content[0].text
-
-
-def fetch_style_detail_openai(client, model, style):
-    '''
-    Use the supplied args and OpenAI client to fetch a more
-    detailed description of the art style from OpenAI.
-
-    client (OpenAI client) -- client makes the request
-    model (str) -- a valid OpenAI API model string, e.g. 'gpt-4'
-    style (str) -- a string describing a subject in plain english, for LLM use.
-    '''
-    prompt_content = STYLE_PROMPT.format(style=style)
-    
-    style_response = client.responses.create(
-        model=model,
-        input=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_output_tokens=150,
-    )
-
-    return style_response.output_text
-
-
-def fetch_style_detail_anthropic(client, model, style):
-    '''
-    Use the supplied args and Anthropic client to fetch a more
-    detailed description of the art style from Anthropic.
-
-    client (Antrhopic client) -- client makes the request
-    model (str) -- a valid Anthropic API model string, e.g. 'claude-3-haiku-latest'
-    style (str) -- a string describing a subject in plain english, for LLM use.
-    '''
-    prompt_content = STYLE_PROMPT.format(style=style)
-    
-    style_response = client.messages.create(
-        model=model,
-        messages=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_tokens=150,
-    )
-
-    return style_response.content[0].text
-
-
-def fetch_dalle_prompt_openai(client, model, image_content_description, image_style_details):
-    '''
-    Use the supplied args and OpenAI client to fetch a more
-    detailed description of the art style from OpenAI.
-
-    client (OpenAI client) -- client makes the request
-    model (str) -- a valid OpenAI API model string, e.g. 'gpt-4'
-    image_content_description (str) -- a string describing a subject in plain english, for LLM use.
-    image_style_details (str) -- a string describing an art style in plain english, for LLM use.
-    '''
-    prompt_content = IMG_PROMPT_REQUEST.format(content=image_content_description, style=image_style_details)
-
-    image_prompt_response =  client.responses.create(
-        model=model,
-        input=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_output_tokens=700
-    )
-    
-    return image_prompt_response.output_text
-
-
-def fetch_dalle_prompt_anthropic(client, model, image_content_description, image_style_details):
-    '''
-    Use the supplied args and Anthropic client to fetch a more
-    detailed description of the art style from Anthropic.
-
-    client (Anthropic client) -- client makes the request
-    model (str) -- a valid Anthropic API model string, e.g. 'claude-3-haiku-latest'
-    image_content_description (str) -- a string describing a subject in plain english, for LLM use.
-    image_style_details (str) -- a string describing an art style in plain english, for LLM use.
-    '''
-    prompt_content = IMG_PROMPT_REQUEST.format(content=image_content_description, style=image_style_details)
-
-    image_prompt_response = client.messages.create(
-        model=model,
-        messages=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_tokens=700
-    )
-    
-    return image_prompt_response.content[0].text
-
-
-def fetch_character_description_openai(client, model, character):
-    '''
-    Use the supplied args and OpenAI client to fetch a more
-    detailed description of the art style from OpenAI.
-
-    client (OpenAI client) -- client makes the request
-    model (str) -- a valid OpenAI API model string, e.g. 'gpt-4'
-    character (str) -- the name of a well-known character, for LLM use.
-    '''
-    prompt_content = CHARACTER_PROMPT.format(character=character)
-
-    character_description_response = client.responses.create(
-        model=model,
-        input=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_output_tokens=250
-    )
-
-    return character_description_response.output_text
-
-
-def fetch_character_description_anthropic(client, model, character):
-    '''
-    Use the supplied args and Anthropic client to fetch a more
-    detailed description of the art style from Anthropic.
-
-    client (OpenAI client) -- client makes the request
-    model (str) -- a valid Anthropic API model string, e.g. 'claude-3-haiku-latest'
-    character (str) -- the name of a well-known character, for LLM use.
-    '''
-    prompt_content = CHARACTER_PROMPT.format(character=character)
-
-    character_description_response = client.messages.create(
-        model=model,
-        messages=[
-        {
-            "role": "user",
-            "content": prompt_content
-        }],
-        max_tokens=250
-    )
-    
-    return character_description_response.content[0].text
 
 
 def fetch_infrigement_detection(client, model, base_64_image):
