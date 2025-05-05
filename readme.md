@@ -103,7 +103,7 @@ Claude's response to the copyright/trademark question:
 
 > This image appears to be artwork from Disney's "Cinderella" animated film. The character depicted is wearing the iconic blue and white dress with a blue hair ribbon, interacting with bluebirds in a wooden attic or cottage setting - a famous scene from the classic Disney film.
 
-This image contains copyright protected character and content owned by The Walt Disney Company. The character and art style are distinctively from Disney's Cinderella animated film, which is protected intellectual property.
+> This image contains copyright protected character and content owned by The Walt Disney Company. The character and art style are distinctively from Disney's Cinderella animated film, which is protected intellectual property.
 
 
 
