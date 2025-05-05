@@ -1,0 +1,22 @@
+Character: Cinderella
+Setting:Singing with the birds
+Style: Cel Animation
+
+Image meta-prompt:
+Generate an output prompt for an image generator using the following subject, setting, and art style. Focus on the physical elements of the subject and setting.  Do not use the subjects name anywhere in your output. Be detailed but use 150 words or less. 
+
+Subject: Cinderella
+
+Setting: Singing with the birds
+
+Art Style: Cel Animation
+
+
+Final prompt:
+A young woman with flowing blonde hair and a tattered maid's dress stands in a rustic cottage kitchen. Gentle morning light streams through a small window, highlighting the dust particles floating in the air. The woman's delicate hands are slightly raised as she sings, her lips curved in a joyful smile despite her humble surroundings. Several bluebirds and robins hover around her, some perched on her shoulders or fingers, others in mid-flight. Their wings are captured in fluid motion, characteristic of classic cel animation techniques. The kitchen features worn wooden countertops, a stone hearth, and simple cooking implements. The colors are vibrant yet soft - primarily blues, yellows, and warm browns with clean black outlines defining each element. The scene has that distinctive hand-painted feel of traditional animation, with smooth gradients and simplified but expressive facial features.
+
+https://oaidalleapiprodscus.blob.core.windows.net/private/org-YEMTlSG5Y2jiuDAMT3coEENq/user-JhC9ueFeiWeyr1PhDNXKR4G3/img-8FKUmWua8TdShBrM44Rag6IB.png?st=2025-05-01T17%3A44%3A42Z&se=2025-05-01T19%3A44%3A42Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=475fd488-6c59-44a5-9aa9-31c4db451bea&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-01T00%3A41%3A38Z&ske=2025-05-02T00%3A41%3A38Z&sks=b&skv=2024-08-04&sig=sYngYzghIC/OSw7jFZa4WFwu16zvAkyXy2gVZjBXEto%3D
+
+Infringement detection: This image appears to be artwork from Disney's "Cinderella" animated film. The character depicted is wearing the iconic blue and white dress with a blue hair ribbon, interacting with bluebirds in a wooden attic or cottage setting - a famous scene from the classic Disney film.
+
+This image contains copyright protected character and content owned by The Walt Disney Company. The character and art style are distinctively from Disney's Cinderella animated film, which is protected intellectual property.

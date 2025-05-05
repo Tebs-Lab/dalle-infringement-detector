@@ -78,7 +78,7 @@ def main():
     image_setting = input("Setting: ")
     image_style = input("Style: ")
 
-    text_to_save = f'Character: {character_name}\nSetting:{image_setting}\nStyle: {image_style}\n\n'
+    text_to_save = f'Character: {character_name}\nSetting: {image_setting}\nStyle: {image_style}\n\n'
 
     ## Fetch Scene Details ##
     if args.prompt_generator == 'gpt':
